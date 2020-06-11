@@ -5,7 +5,6 @@ import org.springframework.ui.Model;
 import com.fuatkara.thymeleaf.entity.Employee;
 import com.fuatkara.thymeleaf.service.EmployeeService;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,7 +34,7 @@ public class EmployeeController {
 		return "employees/list-employees";
 	}
 	
-	
+
 	@GetMapping("/showFormForAdd")
 	public String showFormForAdd(Model theModel) {
 		
@@ -46,6 +45,17 @@ public class EmployeeController {
 		return "employees/employee-form";
 	}
 	
+	@PostMapping("/save")
+	public String saveEmployee(@ModelAttribute("employee") Employee theEmployee) {
+		
+		//save the employee
+		employeeService.save(theEmployee);
+		
+		//use a redirect to prevent	duplicate submissions
+		//Kayitdan sonra bizi list sayfasina gotur!
+		return "redirect:/employees/list";
+	}
+	
 	@GetMapping("/showFormForUpdate")
 	public String showFormForUpdate(@RequestParam("employeeId") int theId,
 									Model model) {
@@ -54,23 +64,20 @@ public class EmployeeController {
 		Employee theEmployee = employeeService.findById(theId);
 		
 		// set employee as a model attribute to pre-populate the form
+		// onceden doldurulmus form olarak gormek icin
 		model.addAttribute("employee",theEmployee);
 		
 		// send over to our form
 		return "employees/employee-form";
 	}
 	
-	@PostMapping("/save")
-	public String saveEmployee(@ModelAttribute("employee") Employee theEmployee) {
+	@GetMapping("/delete")
+	public String delete(@RequestParam("employeeId") int theId) {
 		
-		//save the employee
-		employeeService.save(theEmployee);
+		employeeService.deleteById(theId);
 		
-		//use a redirect to prevent	duplicate submissions
 		return "redirect:/employees/list";
 	}
-	
-	
 	
 	
 }
